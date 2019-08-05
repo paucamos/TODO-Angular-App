@@ -1,0 +1,14 @@
+<div>
+   <input ng-keypress="addResourceByEnter($event,newResource)" ng-model="newResource" placeholder="What needs to be done?">
+   <button ng-click="addResource(newResource)">Add</button>
+   <div>
+      <div ng-repeat="nom in Llista">
+         <span ng-if="nom.name != ''">
+            <input type="checkbox" ng-click="completeResource($index)">
+               {{nom}}
+            <a href="" ng-click="removeResource($index)"> X </a>
+         </span>
+      </div>
+      {{Llista.length-1}}
+   </div>
+</div>
