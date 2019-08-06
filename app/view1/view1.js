@@ -1,41 +1,63 @@
 'use strict';
 
-angular.module('myApp.view1', ['ngRoute'])
-
-.config(['$routeProvider', function($routeProvider) {
+angular.module('myApp.view1', ['ngRoute']).
+config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/view1', {
     templateUrl: 'view1/view1.html',
     controller: 'View1Ctrl'
   });
-}])
+}]).service("todo",["$window", function($window){
 
-.controller('View1Ctrl', ["$scope", function($scope) {
-  $scope.newResource = "";
-  $scope.Llista = [
-      {
-          name: $scope.newResource
-      }
-  ];
-
-  $scope.addResource = function(newResource) {
-    $scope.Llista.push(newResource);
-    $scope.newResource ="";
+  var Todo = function(idx, name){
+    this.name = name;
+    this.idx = idx;
   };
 
-  $scope.addResourceByEnter = function(e, newResource){
-    if(e.charCode == "13"){
-        $scope.addResource(newResource);
+  Todo.prototype = {
+    name :null,
+    idx : null,
+    check: false
+  };
+
+  var TodoManager = function(){
+    var store = $window.localStorage;
+    var storageTodo = JSON.parse(store.getItem("todoCollection"));
+    this.store = store;
+    if(storageTodo){
+      this.data = storageTodo;
     }
   };
 
-  $scope.removeResource = function ($index) {
-    $scope.Llista.splice($index, 1);
+  TodoManager.prototype = {
+    data :[],
+    updateStore : function(){
+      this.store.setItem("todoCollection", JSON.stringify(this.data));
+    },
+    addResource : function(text) {
+      if(text){
+        this.data.push(new Todo(this.data.length,  text));
+        this.updateStore();
+      }
+    },
+    addResourceByEnter : function(e, newResource){
+      if(e.charCode == "13"){
+        this.addResource(newResource.value);
+        newResource.value = "";
+      }
+    },
+    removeResource:function (index) {
+      this.data.splice(index, 1);
+      this.updateStore();
+    }/*,
+    completeResource : function () {
+      this.data.addClass('completed');
+    }*/
   };
 
-  $scope.completeResource = function ($index) {
-    if ($scope.Llista.find($index) == 1)  {
-        $scope.Llista.find($index).addClass('is-done');
-    } 
-  };
+  return new TodoManager();
+}]).
+controller('View1Ctrl', ["$scope","todo", function($scope, todo) {
+  $scope.newResource = {value:""};
+  $scope.todoManager = todo;
 
 }]);

@@ -1,14 +1,13 @@
-<div>
-   <input ng-keypress="addResourceByEnter($event,newResource)" ng-model="newResource" placeholder="What needs to be done?">
-   <button ng-click="addResource(newResource)">Add</button>
+<div class="container">
+   <h1>todos</h1>
+   <input ng-keypress="todoManager.addResourceByEnter($event,newResource);" ng-model="newResource.value" placeholder="What needs to be done?">
    <div>
-      <div ng-repeat="nom in Llista">
-         <span ng-if="nom.name != ''">
-            <input type="checkbox" ng-click="completeResource($index)">
-               {{nom}}
-            <a href="" ng-click="removeResource($index)"> X </a>
-         </span>
+      <div ng-repeat="todo in todoManager.data track by $index">
+            <input type="checkbox" ng-model="todo.check" >
+               {{todo.name}}
+            <button ng-click="todoManager.removeResource($index)"> X </button>
       </div>
-      {{Llista.length-1}}
+      {{todoManager.data.length}}
    </div>
+   {{todoManager.data}}
 </div>
